@@ -1,0 +1,505 @@
+/* Claude Monet — dijital katalog
+   Renkler katalog sayfalarından alınmıştır. */
+:root {
+  --cream: #E9E4C3;
+  --cream-dim: rgba(233, 228, 195, .62);
+  --green: #A6CE96;
+  --olive: #6B6F3E;
+  --slate: #4E5D8F;
+  --table-hi: #3c4943;
+  --table: #27312d;
+  --table-lo: #141a18;
+  --ui-bg: rgba(18, 24, 22, .58);
+  --ui-line: rgba(233, 228, 195, .14);
+  --bar-h: 52px;
+  --serif: "EB Garamond", Garamond, "Times New Roman", serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: var(--table-lo);
+}
+
+body {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  color: var(--cream);
+  font-family: var(--serif);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  background:
+    url("../../img/paper.png"),
+    radial-gradient(120% 90% at 50% 42%, var(--table-hi) 0%, var(--table) 48%, var(--table-lo) 100%);
+  background-size: 160px 160px, auto;
+}
+
+button { font: inherit; color: inherit; }
+
+/* ── Başlık ─────────────────────────────────────── */
+.masthead {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: .6em;
+  padding: max(14px, env(safe-area-inset-top)) 16px 4px;
+  font-size: 13px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--cream-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.masthead em { font-style: italic; text-transform: none; letter-spacing: .02em; font-size: 15px; }
+.masthead-sep { opacity: .5; }
+@media (max-width: 640px) {
+  .masthead-org, .masthead-sep { display: none; }
+}
+@media (max-height: 520px) {
+  .masthead { display: none; }
+}
+
+/* ── Sahne ve kitap ─────────────────────────────── */
+.stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 14px 20px 30px;
+}
+@media (max-width: 640px) { .stage { padding: 8px 10px 30px; } }
+
+.book-host {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#book {
+  position: absolute !important;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  touch-action: none !important;
+}
+#book .stf__wrapper { height: 100%; padding: 0 !important; }
+/* Kütüphanenin sert kapak gölgesi, kapak açılıp kapanırken alttaki sayfa
+   olmadığı için masada keskin kenarlı bir iz bırakıyordu. Yalnızca kapaklar
+   sert olduğundan bu gölge kapatılır; iç gölge ve masa gölgesi kalır. */
+#book .stf__hardShadow { display: none !important; }
+
+/* Kitap kapalıyken ortada durur, açılırken çift sayfanın ortasına kayar (JS) */
+.book-slide {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+/* Masa üzerindeki yumuşak gölge + kapak kalınlığı / sayfa kenarları */
+.desk-shadow {
+  --edges: 0 0 0 transparent;
+  position: absolute;
+  left: 0; top: 0; width: 0; height: 0;
+  border-radius: 2px 3px 3px 2px;
+  box-shadow:
+    var(--edges),
+    0 28px 60px -12px rgba(0, 0, 0, .62),
+    0 10px 22px -4px rgba(0, 0, 0, .40),
+    0 2px 4px rgba(0, 0, 0, .35);
+  opacity: 0;
+  transition-property: left, width, top, height, opacity, box-shadow;
+  transition-duration: .6s, .6s, .3s, .3s, .5s, .6s;
+  transition-timing-function: cubic-bezier(.65, 0, .35, 1);
+  pointer-events: none;
+}
+.desk-shadow.on { opacity: 1; }
+/* Kapalı kitap: kapağın sağ/alt kenarında karton kalınlığı */
+.desk-shadow.closed-front {
+  --edges: 1px 1px 0 #3c4741, 2px 2px 0 #303a35, 3px 3px 0 #262e2b, 4px 4px 0 #1d2421;
+}
+.desk-shadow.closed-back {
+  --edges: -1px 1px 0 #3c4741, -2px 2px 0 #303a35, -3px 3px 0 #262e2b, -4px 4px 0 #1d2421;
+}
+/* Açık kitap: iki yanda kağıt destesi */
+.desk-shadow.open {
+  --edges: -1px 1px 0 #d9d4b3, -2px 2px 0 #cbc5a2, -3px 3px 0 #bdb793,
+            1px 1px 0 #d9d4b3,  2px 2px 0 #cbc5a2,  3px 3px 0 #bdb793;
+}
+
+/* ── Sayfa ──────────────────────────────────────── */
+.page {
+  background: var(--cream);
+  overflow: hidden;
+}
+.page img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  opacity: 0;
+  transition: opacity .35s ease;
+}
+.page img.ready { opacity: 1; }
+
+/* Kağıt dokusu */
+.page .grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: url("../../img/paper.png");
+  background-size: 160px 160px;
+  opacity: .55;
+}
+.page.--hard .grain { opacity: .35; }
+
+/* Işık gradyanı + cilt gölgesi: sağ sayfada sırt solda, sol sayfada sağda */
+.page .light {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.page.--right .light {
+  background:
+    linear-gradient(to right,
+      rgba(0, 0, 0, .26) 0%,
+      rgba(0, 0, 0, .10) 1.6%,
+      rgba(0, 0, 0, .03) 4.5%,
+      rgba(255, 255, 255, .06) 9%,
+      rgba(255, 255, 255, 0) 30%,
+      rgba(0, 0, 0, 0) 82%,
+      rgba(0, 0, 0, .05) 100%),
+    linear-gradient(to bottom, rgba(255, 255, 255, .05), rgba(0, 0, 0, .04));
+}
+.page.--left .light {
+  background:
+    linear-gradient(to left,
+      rgba(0, 0, 0, .26) 0%,
+      rgba(0, 0, 0, .10) 1.6%,
+      rgba(0, 0, 0, .03) 4.5%,
+      rgba(255, 255, 255, .06) 9%,
+      rgba(255, 255, 255, 0) 30%,
+      rgba(0, 0, 0, 0) 82%,
+      rgba(0, 0, 0, .05) 100%),
+    linear-gradient(to bottom, rgba(255, 255, 255, .05), rgba(0, 0, 0, .04));
+}
+/* Sert kapakta sırt menteşesi daha dar ve belirgin */
+.page.--hard.--right .light {
+  background:
+    linear-gradient(to right, rgba(0, 0, 0, .35) 0, rgba(255, 255, 255, .10) .9%, rgba(0, 0, 0, .12) 1.8%, rgba(0, 0, 0, 0) 3.5%),
+    linear-gradient(135deg, rgba(255, 255, 255, .07), rgba(0, 0, 0, .08));
+}
+.page.--hard.--left .light {
+  background:
+    linear-gradient(to left, rgba(0, 0, 0, .35) 0, rgba(255, 255, 255, .10) .9%, rgba(0, 0, 0, .12) 1.8%, rgba(0, 0, 0, 0) 3.5%),
+    linear-gradient(225deg, rgba(255, 255, 255, .07), rgba(0, 0, 0, .08));
+}
+
+/* Sert kapak dönerken: açıya göre kararma (--shade, 0 düz → 1 tam yan) ve kayan parlama */
+.page .shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: calc(var(--shade, 0) * .9);
+}
+.page.--right .shade {
+  background:
+    linear-gradient(100deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, .16) 48%, rgba(255, 255, 255, 0) 62%) no-repeat,
+    linear-gradient(to right, rgba(10, 14, 12, .30), rgba(10, 14, 12, .62));
+  background-size: 260% 100%, 100% 100%;
+  background-position: calc(100% - var(--shade, 0) * 100%) 0, 0 0;
+}
+.page.--left .shade {
+  background:
+    linear-gradient(260deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, .16) 48%, rgba(255, 255, 255, 0) 62%) no-repeat,
+    linear-gradient(to left, rgba(10, 14, 12, .30), rgba(10, 14, 12, .62));
+  background-size: 260% 100%, 100% 100%;
+  background-position: calc(var(--shade, 0) * 100%) 0, 0 0;
+}
+
+/* İçindekiler bağlantıları: görünmez, üzerine gelince hafif vurgu */
+.toc-link {
+  position: absolute;
+  z-index: 2;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color .2s ease, box-shadow .2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (hover: hover) {
+  .toc-link:hover { background: rgba(122, 104, 156, .09); }
+}
+.toc-link:active { background: rgba(122, 104, 156, .18); }
+.toc-link:focus-visible { outline: 2px solid rgba(122, 104, 156, .8); outline-offset: 1px; }
+
+/* ── İpucu ──────────────────────────────────────── */
+.hint {
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  transform: translateX(-50%);
+  margin: 0;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--cream-dim);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .8s ease;
+}
+.hint.show { opacity: 1; }
+
+/* ── Alt çubuk ──────────────────────────────────── */
+.bar {
+  flex: none;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: var(--bar-h);
+  margin: 4px 12px max(12px, env(safe-area-inset-bottom));
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--ui-bg);
+  border: 1px solid var(--ui-line);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  touch-action: manipulation;
+}
+.bar-div { width: 1px; height: 22px; margin: 0 6px; background: var(--ui-line); }
+
+.btn {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--cream-dim);
+  cursor: pointer;
+  transition: background-color .2s ease, color .2s ease, opacity .2s ease;
+}
+.btn svg {
+  width: 20px; height: 20px;
+  fill: none; stroke: currentColor; stroke-width: 1.5;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.btn svg circle { fill: currentColor; stroke: none; }
+.btn:hover { color: var(--cream); background: rgba(233, 228, 195, .08); }
+.btn:focus-visible { outline: 2px solid var(--green); outline-offset: 1px; }
+.btn:disabled { opacity: .28; cursor: default; background: transparent; }
+
+.counter {
+  min-width: 74px;
+  text-align: center;
+  font-size: 16px;
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: .04em;
+  color: var(--cream);
+}
+
+#btnSound .ico-on, #btnFull .ico-exit { display: none; }
+#btnSound[aria-pressed="true"] .ico-on { display: block; }
+#btnSound[aria-pressed="true"] .ico-off { display: none; }
+#btnSound[aria-pressed="true"] { color: var(--green); }
+.is-fullscreen #btnFull .ico-enter { display: none; }
+.is-fullscreen #btnFull .ico-exit { display: block; }
+
+@media (max-width: 380px) {
+  .btn { width: 36px; }
+  .counter { min-width: 62px; font-size: 15px; }
+  .bar-div { margin: 0 3px; }
+}
+
+/* ── Yükleme ekranı ─────────────────────────────── */
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background:
+    url("../../img/paper.png"),
+    radial-gradient(120% 90% at 50% 42%, var(--table-hi) 0%, var(--table) 48%, var(--table-lo) 100%);
+  background-size: 160px 160px, auto;
+  transition: opacity .9s ease, visibility .9s;
+}
+#loader.done { opacity: 0; visibility: hidden; }
+.loader-mark {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  color: var(--green);
+  animation: breathe 2.4s ease-in-out infinite;
+}
+.mark-m { font-size: 64px; line-height: .8; font-weight: 500; }
+.mark-words { font-size: 11px; line-height: 1.25; letter-spacing: .12em; text-transform: uppercase; }
+.loader-title { margin: 0; font-size: 30px; letter-spacing: .16em; text-transform: uppercase; }
+.loader-sub { margin: 0; font-size: 17px; font-style: italic; color: var(--cream-dim); }
+.loader-bar {
+  width: 160px; height: 1px; margin: 26px 0 10px;
+  background: var(--ui-line); overflow: hidden;
+}
+.loader-bar span {
+  display: block; height: 100%; width: 0;
+  background: var(--green);
+  transition: width .4s ease;
+}
+.loader-note { margin: 0; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--cream-dim); }
+@keyframes breathe { 50% { opacity: .55; } }
+
+/* ── Yakınlaştırma ──────────────────────────────── */
+.zoom {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: #0f1413;
+  animation: fadeIn .25s ease;
+}
+.zoom[hidden] { display: none; }
+.zoom-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+  cursor: zoom-in;
+}
+.zoom-stage.zoomed { cursor: grab; }
+.zoom-stage.dragging { cursor: grabbing; }
+#zoomImg {
+  position: absolute;
+  left: 0; top: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+  user-select: none;
+  -webkit-user-drag: none;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, .5);
+}
+.zoom-top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: max(10px, env(safe-area-inset-top)) 12px 10px 20px;
+  pointer-events: none;
+}
+.zoom-top > * { pointer-events: auto; }
+.zoom-label { font-size: 15px; letter-spacing: .08em; color: var(--cream-dim); }
+.zoom .btn { background: var(--ui-bg); border: 1px solid var(--ui-line); }
+.zoom-nav { position: absolute; top: 50%; transform: translateY(-50%); }
+.zoom-nav.prev { left: 10px; }
+.zoom-nav.next { right: 10px; }
+/* Telefonda oklar sayfanın üstüne binmesin: alta, ipucunun yanına */
+@media (max-width: 640px) {
+  .zoom-nav { top: auto; transform: none; bottom: max(8px, env(safe-area-inset-bottom)); }
+  .zoom-nav.prev { left: 12px; }
+  .zoom-nav.next { right: 12px; }
+}
+.zoom-hint {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: max(14px, env(safe-area-inset-bottom));
+  margin: 0;
+  text-align: center;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--cream-dim);
+  pointer-events: none;
+  transition: opacity .6s ease;
+}
+.zoom-stage.zoomed ~ .zoom-hint { opacity: 0; }
+@keyframes fadeIn { from { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .loader-mark { animation: none; }
+}
+
+/* ── Dikey telefon: kitap tüm genişliği kullanır, yan çevirme ipucu ── */
+.rotate-hint { display: none; }
+@media (orientation: portrait) and (max-width: 700px) {
+  .stage { padding: 8px 6px 64px; }
+  .rotate-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 22px;
+    margin: 0;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--cream-dim);
+    pointer-events: none;
+  }
+  .rotate-hint svg {
+    width: 20px; height: 20px; flex: none;
+    fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round;
+    animation: tilt 3.2s ease-in-out infinite;
+  }
+  .hint { display: none; }
+}
+@keyframes tilt { 0%, 55%, 100% { transform: rotate(0); } 70%, 90% { transform: rotate(-90deg); } }
+
+/* ── Yatay telefon (kısa ekran): çubuk sağda dikey, kitap tüm yüksekliği kullanır ── */
+@media (orientation: landscape) and (max-height: 500px) {
+  body { flex-direction: row; }
+  .stage {
+    padding: 6px 6px 6px max(8px, env(safe-area-inset-left));
+  }
+  .hint { display: none; }
+  .bar {
+    flex-direction: column;
+    justify-content: center;
+    height: auto;
+    width: 50px;
+    max-height: calc(100% - 12px);
+    margin: 6px max(8px, env(safe-area-inset-right)) 6px 0;
+    padding: 6px 0;
+    border-radius: 25px;
+    gap: 0;
+  }
+  .bar .btn { width: 40px; height: 36px; }
+  .bar-div { width: 22px; height: 1px; margin: 3px 0; }
+  .counter {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 13px;
+    line-height: 1.15;
+    letter-spacing: 0;
+    padding: 2px 0;
+  }
+  .counter .c-tot { font-size: 11px; color: var(--cream-dim); }
+}
+@media (orientation: landscape) and (max-height: 340px) {
+  .bar .btn { height: 32px; }
+  #btnFull { display: none; }
+}

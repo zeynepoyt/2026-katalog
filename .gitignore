@@ -1,0 +1,23 @@
+# Kaynak PDF'ler ve ara dosyalar repoya girmez
+*.pdf
+work/
+qr/
+
+# Kök dizindeki sıkıştırılmamış görseller (WhatsApp, dışa aktarım vb.)
+/*.png
+/*.jpg
+/*.jpeg
+/*.tif
+/*.tiff
+/*.ai
+
+# Sistem / araç dosyaları
+.DS_Store
+Thumbs.db
+desktop.ini
+__pycache__/
+.vscode/
+.claude/
+
+# Ham ses kayıtları (işlenmiş halleri assets/audio altında)
+/*.ogg

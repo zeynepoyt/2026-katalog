@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Claude Monet — Lumière, Couleur, Émotion · Sergi Kataloğu</title>
+<meta name="description" content="Musée Marmottan Monet, Paris. Claude Monet — Işık, Renk, Duygu. Sayfaları çevirerek inceleyebileceğiniz dijital sergi kataloğu.">
+<meta name="theme-color" content="#1f2725">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="tr_TR">
+<meta property="og:site_name" content="Musée Marmottan Monet">
+<meta property="og:title" content="Claude Monet — Lumière, Couleur, Émotion">
+<meta property="og:description" content="Işık, Renk, Duygu · Sergi Kataloğu. Musée Marmottan Monet, Paris. Sayfaları çevirerek inceleyin.">
+<meta property="og:url" content="https://zeynepoyt.github.io/2026-katalog/">
+<meta property="og:image" content="https://zeynepoyt.github.io/2026-katalog/img/og.jpg">
+<meta property="og:image:secure_url" content="https://zeynepoyt.github.io/2026-katalog/img/og.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Claude Monet sergi kataloğunun ön kapağı">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Claude Monet — Lumière, Couleur, Émotion">
+<meta name="twitter:description" content="Işık, Renk, Duygu · Sergi Kataloğu. Musée Marmottan Monet, Paris.">
+<meta name="twitter:image" content="https://zeynepoyt.github.io/2026-katalog/img/og.jpg">
+
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="img/pages/page-01.webp" type="image/webp">
+<link rel="stylesheet" href="assets/css/style.css?v=5">
+</head>
+<body>
+
+<div id="loader" role="status" aria-live="polite">
+  <div class="loader-mark" aria-hidden="true">
+    <span class="mark-m">M</span>
+    <span class="mark-words">Musée<br>Marmottan<br>Monet</span>
+  </div>
+  <p class="loader-title">Claude Monet</p>
+  <p class="loader-sub">Lumière, Couleur, Émotion</p>
+  <div class="loader-bar"><span id="loaderFill"></span></div>
+  <p class="loader-note">Katalog hazırlanıyor</p>
+</div>
+
+<header class="masthead">
+  <span class="masthead-org">Musée Marmottan Monet</span>
+  <span class="masthead-sep" aria-hidden="true">·</span>
+  <span class="masthead-title">Claude Monet — <em>Lumière, Couleur, Émotion</em></span>
+</header>
+
+<main class="stage" id="stage">
+  <div class="book-host" id="bookHost" aria-label="Katalog: sayfaları çevirmek için köşeden tutup sürükleyin">
+    <div class="book-slide" id="bookSlide">
+      <div class="desk-shadow" id="deskShadow" aria-hidden="true"></div>
+      <div id="book"></div>
+    </div>
+  </div>
+  <p class="hint" id="hint">Sayfayı köşesinden tutup çevirin</p>
+  <p class="rotate-hint" aria-hidden="true">
+    <svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M3 14a9 9 0 0 0 6 6M21 10a9 9 0 0 0-6-6"/></svg>
+    Daha rahat okumak için telefonu yan çevirin
+  </p>
+</main>
+
+<nav class="bar" aria-label="Katalog kontrolleri">
+  <button class="btn" id="btnPrev" type="button" aria-label="Önceki sayfa" title="Önceki (←)">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg>
+  </button>
+  <span class="counter" id="counter" aria-live="polite"><span class="c-cur">1</span> <span class="c-tot">/ 16</span></span>
+  <button class="btn" id="btnNext" type="button" aria-label="Sonraki sayfa" title="Sonraki (→)">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 5.5 16 12l-6.5 6.5"/></svg>
+  </button>
+  <span class="bar-div" aria-hidden="true"></span>
+  <button class="btn" id="btnToc" type="button" aria-label="İçindekiler" title="İçindekiler">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7h11M8 12h11M8 17h11"/><circle cx="4.5" cy="7" r=".9"/><circle cx="4.5" cy="12" r=".9"/><circle cx="4.5" cy="17" r=".9"/></svg>
+  </button>
+  <button class="btn" id="btnZoom" type="button" aria-label="Sayfayı büyüt" title="Büyüt">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5 5M10.5 8v5M8 10.5h5"/></svg>
+  </button>
+  <button class="btn" id="btnSound" type="button" aria-label="Sayfa sesi" aria-pressed="false" title="Ses: kapalı">
+    <svg class="ico-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="m16 9.5 5 5M21 9.5l-5 5"/></svg>
+    <svg class="ico-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>
+  </button>
+  <button class="btn" id="btnFull" type="button" aria-label="Tam ekran" title="Tam ekran">
+    <svg class="ico-enter" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>
+    <svg class="ico-exit" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>
+  </button>
+</nav>
+
+<div class="zoom" id="zoom" hidden role="dialog" aria-modal="true" aria-label="Sayfa yakınlaştırma">
+  <div class="zoom-stage" id="zoomStage">
+    <img id="zoomImg" alt="" draggable="false">
+  </div>
+  <div class="zoom-top">
+    <span class="zoom-label" id="zoomLabel">Sayfa 1</span>
+    <button class="btn" id="zoomClose" type="button" aria-label="Kapat" title="Kapat (Esc)">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+  <button class="btn zoom-nav prev" id="zoomPrev" type="button" aria-label="Önceki sayfa">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg>
+  </button>
+  <button class="btn zoom-nav next" id="zoomNext" type="button" aria-label="Sonraki sayfa">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 5.5 16 12l-6.5 6.5"/></svg>
+  </button>
+  <p class="zoom-hint">İki parmakla büyütün · çift dokunun</p>
+</div>
+
+<script src="assets/vendor/page-flip.browser.js?v=5"></script>
+<script src="assets/js/app.js?v=5"></script>
+</body>
+</html>
